@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  manga-studio:
+    build: .
+    ports:
+      - "80:8000"
+    volumes:
+      - ./models:/app/models
+      - ./exports:/app/exports
+      - ./data:/app/data
+    environment:
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - POLLINATIONS_API_KEY=${POLLINATIONS_API_KEY}
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

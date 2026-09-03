@@ -1,0 +1,15 @@
+node_modules/
+dist/
+*.db
+*.pyc
+__pycache__/
+.env
+models/*.bin
+models/*.safetensors
+exports/
+data/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

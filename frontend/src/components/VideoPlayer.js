@@ -1,0 +1,12 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useRecoilValue } from 'recoil';
+import { shotsState } from '../store';
+import { Film, Image, Play } from 'lucide-react';
+const VideoPlayer = () => {
+    const allShots = useRecoilValue(shotsState);
+    const withVideo = allShots.filter(s => s.video_url);
+    const withImage = allShots.filter(s => s.image_url);
+    return (_jsxs("div", { className: "space-y-4", children: [_jsx("h3", { className: "text-white font-semibold", children: "Video Output" }), _jsxs("div", { className: "grid grid-cols-3 gap-4", children: [_jsxs("div", { className: "glass rounded-xl p-4 text-center", children: [_jsx(Film, { size: 24, className: "mx-auto mb-2 text-manga-accent" }), _jsx("p", { className: "text-2xl font-bold text-white", children: withVideo.length }), _jsx("p", { className: "text-gray-500 text-xs", children: "Videos" })] }), _jsxs("div", { className: "glass rounded-xl p-4 text-center", children: [_jsx(Image, { size: 24, className: "mx-auto mb-2 text-blue-400" }), _jsx("p", { className: "text-2xl font-bold text-white", children: withImage.length }), _jsx("p", { className: "text-gray-500 text-xs", children: "Images" })] })] }), _jsxs("div", { className: "glass rounded-xl p-5", children: [_jsx("h4", { className: "text-white font-medium mb-3", children: "Timeline" }), _jsx("div", { className: "space-y-2", children: allShots.map(shot => (_jsxs("div", { className: "flex items-center gap-3 p-2 bg-manga-bg rounded-lg", children: [_jsx("div", { className: "w-8 h-8 rounded bg-manga-card flex items-center justify-center", children: shot.video_url ? _jsx(Play, { size: 14, className: "text-green-400" }) : shot.image_url ? _jsx(Image, { size: 14, className: "text-blue-400" }) : _jsx("div", { className: "w-3 h-3 rounded-full bg-gray-600" }) }), _jsx("div", { className: "flex-1", children: _jsx("p", { className: "text-white text-sm truncate", children: shot.description || `${shot.type} shot` }) }), shot.video_url && _jsx("span", { className: "text-xs text-green-400", children: "Done" })] }, shot.id))) }), allShots.length === 0 && _jsx("p", { className: "text-gray-500 text-sm text-center py-8", children: "No shots yet" })] })] }));
+};
+export default VideoPlayer;
+//# sourceMappingURL=VideoPlayer.js.map
