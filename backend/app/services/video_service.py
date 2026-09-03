@@ -4,6 +4,8 @@ import subprocess
 from pathlib import Path
 from app.core.config import settings
 
+VENV_PYTHON = os.environ.get("VENV_PYTHON", "/opt/venv/bin/python")
+
 
 async def generate_video_wan21(
     prompt: str,
@@ -21,7 +23,7 @@ async def generate_video_wan21(
     size_map = {"480p": "832*480", "720p": "1280*720"}
     size = size_map.get(resolution, "832*480")
     cmd = [
-        "python",
+        VENV_PYTHON,
         str(models_dir / "Wan2.1-T2V-1.3B/generate.py"),
         "--task",
         f"t2v-{model_size}",

@@ -77,3 +77,14 @@ async def update_scene(
     await db.commit()
     await db.refresh(scene)
     return SceneResponse.model_validate(scene)
+
+
+@router.delete("/{scene_id}")
+async def delete_scene(scene_id: str, db: AsyncSession = Depends(get_async_db)):
+    result = await db.execute(select(Scene).where(Scene.id == scene_id))
+    scene = result.scalar_one_or_none()
+    if not scene:
+        raise HTTPException(status_code=404, detail="Scene not found")
+    await db.delete(scene)
+    await db.commit()
+    return {"success": True}

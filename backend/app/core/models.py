@@ -113,16 +113,9 @@ class GeneratedVideo(Base):
     shot = relationship("Shot", back_populates="generated_videos")
 
 
-class Task(Base):
-    __tablename__ = "tasks"
+class AppSettings(Base):
+    __tablename__ = "app_settings"
     id = Column(String, primary_key=True, index=True)
-    project_id = Column(
-        String, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
-    )
-    task_type = Column(String, nullable=False)
-    status = Column(String, default="pending")
-    progress = Column(Float, default=0.0)
-    result = Column(JSON, nullable=True)
-    error = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    deepseek_api_key = Column(String, default="")
+    pollinations_api_key = Column(String, default="")
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

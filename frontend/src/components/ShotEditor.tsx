@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { shotsState, selectedSceneIdState, isGeneratingState, generationProgressState } from '../store';
 import { api } from '../api/client';
 import { Image, Film, Camera, Loader2 } from 'lucide-react';
 import clsx from 'clsx';
+
+function useDebounce<T extends (...args: any[]) => any>(fn: T, delay: number): T {
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => { return () => { if (timerRef.current) clearTimeout(timerRef.current); }; }, []);
+  return useCallback((...args: Parameters<T>) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => fn(...args), delay);
+  }, [fn, delay]) as T;
+}
 
 const ShotEditor: React.FC = () => {
   const [selectedShot, setSelectedShot] = useState<string | null>(null);
@@ -11,6 +20,7 @@ const ShotEditor: React.FC = () => {
   const [progress, setProgress] = useRecoilState(generationProgressState);
   const shots = useRecoilValue(shotsState);
   const currentShot = shots.find(s => s.id === selectedShot);
+  const debouncedUpdate = useDebounce((data: any) => api.updateShot(selectedShot || '', data), 300);
 
   const handleGenerateImage = async () => {
     if (!selectedShot) return;
@@ -59,11 +69,11 @@ const ShotEditor: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <label className="text-gray-400 text-sm mb-1 block">Description</label>
-                <textarea value={currentShot.description} onChange={(e) => api.updateShot(currentShot.id, { description: e.target.value })} className="w-full bg-manga-bg border border-manga-border rounded-lg px-3 py-2 text-white text-sm focus:border-studio-500 focus:outline-none h-24 resize-none" />
+                <textarea onChange={(e) => debouncedUpdate({ description: e.target.value })} className="w-full bg-manga-bg border border-manga-border rounded-lg px-3 py-2 text-white text-sm focus:border-studio-500 focus:outline-none h-24 resize-none" />
               </div>
               <div>
                 <label className="text-gray-400 text-sm mb-1 block">Camera</label>
-                <select value={currentShot.camera_config?.angle || 'wide'} onChange={(e) => { const c = { ...currentShot.camera_config, angle: e.target.value }; api.updateShot(currentShot.id, { camera_config: c }); }} className="w-full bg-manga-bg border border-manga-border rounded-lg px-3 py-2 text-white text-sm">
+                <select onChange={(e) => { const c = { ...currentShot.camera_config, angle: e.target.value }; debouncedUpdate({ camera_config: c }); }} className="w-full bg-manga-bg border border-manga-border rounded-lg px-3 py-2 text-white text-sm">
                   <option value="wide">Wide</option>
                   <option value="medium">Medium</option>
                   <option value="closeup">Close-up</option>

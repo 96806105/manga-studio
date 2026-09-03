@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from '../api/client';
-import { Save } from 'lucide-react';
+import { Save, RefreshCw } from 'lucide-react';
 
 const Settings: React.FC = () => {
   const [keys, setKeys] = useState({ deepseek: '', pollinations: '' });
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.getSettings().then(s => { setKeys({ deepseek: s.deepseek_api_key, pollinations: s.pollinations_api_key }); setLoading(false); }).catch(() => setLoading(false));
+  }, []);
 
   const handleSave = async () => {
     try {
-      await api.updateProject('settings', { apiKeys: keys });
+      await api.updateSettings({ deepseek_api_key: keys.deepseek, pollinations_api_key: keys.pollinations });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch (err) { alert(err); }
+    } catch (err: any) { alert(err); }
   };
+
+  if (loading) return <div className="h-full flex items-center justify-center text-gray-500">Loading...</div>;
 
   return (
     <div className="h-full p-6 overflow-y-auto max-w-2xl">

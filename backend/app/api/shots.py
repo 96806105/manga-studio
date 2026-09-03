@@ -65,3 +65,14 @@ async def get_shot(shot_id: str, db: AsyncSession = Depends(get_async_db)):
     if not shot:
         raise HTTPException(status_code=404, detail="Shot not found")
     return ShotResponse.model_validate(shot)
+
+
+@router.delete("/{shot_id}")
+async def delete_shot(shot_id: str, db: AsyncSession = Depends(get_async_db)):
+    result = await db.execute(select(Shot).where(Shot.id == shot_id))
+    shot = result.scalar_one_or_none()
+    if not shot:
+        raise HTTPException(status_code=404, detail="Shot not found")
+    await db.delete(shot)
+    await db.commit()
+    return {"success": True}

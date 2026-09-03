@@ -4,6 +4,7 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_async_db
 from app.core.models import Shot, GeneratedVideo, Scene
+from app.core.config import settings
 from app.services.script_service import generate_script as _gen_script
 from app.services.image_service import generate_image as _gen_image
 from app.services.video_service import generate_video_wan21, generate_video_ltx
@@ -64,7 +65,9 @@ async def generate_shot_image(shot_id: str, db: AsyncSession = Depends(get_async
     try:
         image_b64 = await _gen_image(shot.description or "a beautiful manga scene")
         image_data = base64.b64decode(image_b64)
-        tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False, dir="./exports")
+        tmp = tempfile.NamedTemporaryFile(
+            suffix=".png", delete=False, dir=settings.EXPORTS_DIR
+        )
         tmp.write(image_data)
         tmp.close()
         image_url = f"/exports/{os.path.basename(tmp.name)}"
@@ -97,8 +100,8 @@ async def generate_shot_video(
     )
     await db.commit()
     video_id = str(uuid.uuid4())
-    video_path = f"./exports/{video_id}.mp4"
-    os.makedirs("./exports", exist_ok=True)
+    video_path = os.path.join(settings.EXPORTS_DIR, f"{video_id}.mp4")
+    os.makedirs(settings.EXPORTS_DIR, exist_ok=True)
     video = await generate_video_wan21(
         prompt=shot.description or "a cinematic manga scene",
         output_path=video_path,

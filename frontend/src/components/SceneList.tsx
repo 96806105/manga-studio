@@ -1,13 +1,15 @@
-import React from 'react';
-import { useRecoilValue } from 'recoil';
-import { scenesState, selectedSceneIdState } from '../store';
+import React, { useEffect } from 'react';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { scenesState, selectedSceneIdState, shotsState } from '../store';
 import { api } from '../api/client';
 import { Wand2, Image, Film } from 'lucide-react';
 import clsx from 'clsx';
 interface SceneListProps { projectId: string; selectedSceneId: string | null; onSelectScene: (id: string) => void; onGenerateImage: (sid: string) => void; onGenerateVideo: (sid: string) => void; generating: boolean; }
 const SceneList: React.FC<SceneListProps> = ({ projectId, selectedSceneId, onSelectScene, onGenerateImage, onGenerateVideo, generating }) => {
   const scenes = useRecoilValue(scenesState);
-  const handleGenerateAll = async () => { for (const s of scenes) { const shots = await api.getShots(s.id); for (const sh of shots) { if (!sh.image_url) await onGenerateImage(sh.id); if (!sh.video_url) await onGenerateVideo(sh.id); } } };
+  const setShots = useSetRecoilState(shotsState);
+  useEffect(() => { if (selectedSceneId) { api.getShots(selectedSceneId).then(s => setShots(s)).catch(() => {}); } }, [selectedSceneId]);
+  const handleGenerateAll = async () => { for (const s of scenes) { const shots = await api.getShots(s.id); setShots(shots); for (const sh of shots) { if (!sh.image_url) await onGenerateImage(sh.id); if (!sh.video_url) await onGenerateVideo(sh.id); } } };
   return (
     <div>
       <div className="flex items-center justify-between p-3 border-b border-manga-border"><span className="text-sm text-gray-400">{scenes.length} scenes</span>

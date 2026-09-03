@@ -5,12 +5,6 @@ from app.core.config import settings
 
 
 async def generate_image(prompt: str, negative_prompt: str = "") -> str:
-    if not settings.POLLINATIONS_API_KEY:
-        api_key = (
-            settings.POLLINATIONS_API_KEY
-            if hasattr(settings, "POLLINATIONS_API_KEY")
-            else ""
-        )
     async with httpx.AsyncClient(timeout=120) as client:
         response = await client.post(
             "https://image.pollinations.ai/prompt",

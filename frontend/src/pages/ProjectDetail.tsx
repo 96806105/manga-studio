@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { selectedSceneIdState, isGeneratingState, generationProgressState, scenesState, shotsState } from '../store';
 import { api } from '../api/client';
 import { ArrowLeft, Wand2, Image, Film, Loader2 } from 'lucide-react';
@@ -16,9 +16,13 @@ const ProjectDetail: React.FC = () => {
   const projectId = id || '';
   const [activeTab, setActiveTab] = React.useState<Tab>('script');
   const [selectedSceneId, setSelectedSceneId] = useRecoilState(selectedSceneIdState);
+  const setScenes = useSetRecoilState(scenesState);
+  const setShots = useSetRecoilState(shotsState);
   const [generating, setGenerating] = useRecoilState(isGeneratingState);
   const [progress, setProgress] = useRecoilState(generationProgressState);
-  useEffect(() => { api.getScenes(projectId); api.getShots(projectId ? '' : ''); }, []);
+  useEffect(() => {
+    api.getScenes(projectId).then(scenes => { setScenes(scenes); return api.getShots(scenes.length > 0 ? scenes[0].id : ''); }).then(shots => { setShots(shots); }).catch(() => {});
+  }, [projectId]);
   const handleGenerateScript = async (storyInput: string) => { setGenerating(true); setProgress(0); try { await api.generateScript(projectId, storyInput, 8); } catch (err: any) { alert(err.message); } finally { setGenerating(false); setProgress(0); } };
   const handleGenerateImage = async (shotId: string) => { setGenerating(true); setProgress(0); try { await api.generateImage(shotId); setProgress(100); } catch (err: any) { alert(err.message); } finally { setGenerating(false); setProgress(0); } };
   const handleGenerateVideo = async (shotId: string) => { setGenerating(true); setProgress(0); try { await api.generateVideo(shotId, { resolution: '480p' }); setProgress(100); } catch (err: any) { alert(err.message); } finally { setGenerating(false); setProgress(0); } };
