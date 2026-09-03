@@ -8,6 +8,7 @@ models/*.bin
 models/*.safetensors
 exports/
 data/
+server.log
 .idea/
 .vscode/
 *.swp
