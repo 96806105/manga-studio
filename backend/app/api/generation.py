@@ -1,16 +1,14 @@
-from typing import Dict, Any
+from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_async_db
-from app.core.models import Shot, Project, GeneratedVideo, Task, Scene
-from app.schemas.shot import ShotUpdate
+from app.core.models import Shot, GeneratedVideo, Scene
 from app.services.script_service import generate_script as _gen_script
 from app.services.image_service import generate_image as _gen_image
 from app.services.video_service import generate_video_wan21, generate_video_ltx
 from app.services.export_service import assemble_video
-import os
-import uuid
+import os, uuid, base64, tempfile
 from datetime import datetime
 
 router = APIRouter(prefix="/generation", tags=["generation"])
@@ -65,8 +63,6 @@ async def generate_shot_image(shot_id: str, db: AsyncSession = Depends(get_async
     await db.commit()
     try:
         image_b64 = await _gen_image(shot.description or "a beautiful manga scene")
-        import base64, tempfile
-
         image_data = base64.b64decode(image_b64)
         tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False, dir="./exports")
         tmp.write(image_data)

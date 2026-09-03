@@ -3,8 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_async_db
-from app.core.models import Scene, Shot, Project
+from app.core.models import Scene, Shot
 from app.schemas.scene import SceneCreate, SceneUpdate, SceneResponse, SceneWithShots
+from app.schemas.shot import ShotResponse
 import uuid
 from datetime import datetime
 
