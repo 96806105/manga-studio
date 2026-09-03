@@ -17,30 +17,52 @@ Cloud-deployed AI workstation for creating manga and short drama videos from nov
 
 ```bash
 # 1. Create RunPod instance with RTX 4090
+#    - Use RunPod console: https://runpod.io/console
+#    - Select GPU: RTX 4090 (or RTX A6000 for more VRAM)
+#    - Choose container template: Docker
+#    - Set disk: 50GB+
+
 # 2. SSH into instance
-git clone <repo>
+ssh root@<your-server-ip>
+
+# 3. Clone repo
+git clone https://github.com/96806105/manga-studio.git
 cd manga-studio
 
-# 3. Set API keys
+# 4. Set API keys
 cp .env.example .env
-# Edit .env with your API keys
+# Edit .env with your DeepSeek and Pollinations API keys
 
-# 4. Build and start
+# 5. Build and start
 docker-compose up -d --build
 ```
 
 Access at `http://your-server-ip`
 
+### Quick Start (Local)
+
+```bash
+# Backend
+cd backend
+pip install -r requirements.txt
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+# Frontend
+cd frontend
+npm install
+npm run dev
+```
+
 ## Features
 
-- 📝 Script Generation from novel text
-- 🎨 Character reference image generation
+- 📝 Script Generation from novel text (DeepSeek API)
+- 🎨 Character reference image generation (Pollinations.ai)
 - 🎬 Keyframe-based storyboard editing
-- 🎥 AI video generation (Wan2.1/LTXVideo)
-- 🎞️ Video assembly and export
+- 🎥 AI video generation (Wan2.1/LTXVideo on GPU)
+- 🎞️ Video assembly and export (FFmpeg)
 
 ## Cost
 
 - RunPod RTX 4090: $0.34/hr
 - Full project (~180 clips): ~$5 GPU
-- API costs: ~$0 (free tiers)
+- API costs: ~$0 (DeepSeek free tier: 5M tokens/month, Pollinations.ai: free)
