@@ -9,6 +9,10 @@ models/*.safetensors
 exports/
 data/
 server.log
+*.d.ts
+*.d.ts.map
+*.js.map
+tsconfig.tsbuildinfo
 .idea/
 .vscode/
 *.swp

@@ -1,2 +1,0 @@
-/** @type {import('tailwindcss').Config} */
-export default { content: ['./src/**/*.{jsx,tsx}'], theme: { extend: { colors: { manga: { bg: '#0f0f0f', surface: '#1a1a1a', card: '#242424', border: '#333333', text: '#e0e0e0', accent: '#ff6b6b', accent2: '#4ecdc4', gold: '#ffd93d' } } } }, plugins: [] };
