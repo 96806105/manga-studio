@@ -1,68 +1,80 @@
-# Manga Studio - AI Manga/Drama Video Creation Workstation
+# Manga Studio - AI 漫画/短剧视频创作工作站
 
-Cloud-deployed AI workstation for creating manga and short drama videos from novels or story outlines.
+云端部署的 AI 漫画和短剧视频创作工作站。
 
-## Architecture
+## 架构
 
-- **Backend**: FastAPI (Python) with diffusers for video generation
-- **Frontend**: React + Vite + TypeScript + Tailwind CSS
-- **Database**: SQLite (aiosqlite)
-- **Video Models**: Wan2.1 1.3B, LTXVideo 1.3B (cloud GPU)
-- **AI Services**: DeepSeek API (script), Pollinations.ai (images)
-- **Video Assembly**: FFmpeg
+- **后端**: FastAPI (Python) + Agnes AI API
+- **前端**: React + Vite + TypeScript + Tailwind CSS（中文界面）
+- **数据库**: SQLite (aiosqlite)
+- **视频生成**: Agnes Video 2.5 Flash（文生视频、首尾帧、图片参考）
+- **AI 服务**: Agnes AI API（文本生成 GLM-2.5-Flash、图片生成 Agnes-Image-2.1-Flash、视频生成 Agnes-Video-2.5-Flash）
+- **视频组装**: FFmpeg
 
-## Deployment
+## 部署
 
-### RunPod (Recommended)
+### RunPod（推荐）
 
 ```bash
-# 1. Create RunPod instance with RTX 4090
-#    - Use RunPod console: https://runpod.io/console
-#    - Select GPU: RTX 4090 (or RTX A6000 for more VRAM)
-#    - Choose container template: Docker
-#    - Set disk: 50GB+
-
-# 2. SSH into instance
-ssh root@<your-server-ip>
-
-# 3. Clone repo
+# 1. 创建 RunPod 实例（RTX 4090）
+# 2. SSH 连接并克隆仓库
 git clone https://github.com/96806105/manga-studio.git
 cd manga-studio
 
-# 4. Set API keys
+# 3. 设置 API 密钥
 cp .env.example .env
-# Edit .env with your DeepSeek and Pollinations API keys
+# 编辑 .env 填入 Agnes AI API Key：https://agnes-ai.com
 
-# 5. Build and start
+# 4. 构建并启动
 docker-compose up -d --build
 ```
 
-Access at `http://your-server-ip`
+访问 `http://your-server-ip`
 
-### Quick Start (Local)
+### 快速启动（本地）
 
 ```bash
-# Backend
+# 后端
 cd backend
 pip install -r requirements.txt
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 
-# Frontend
+# 前端
 cd frontend
 npm install
 npm run dev
 ```
 
-## Features
+## 功能
 
-- 📝 Script Generation from novel text (DeepSeek API)
-- 🎨 Character reference image generation (Pollinations.ai)
-- 🎬 Keyframe-based storyboard editing
-- 🎥 AI video generation (Wan2.1/LTXVideo on GPU)
-- 🎞️ Video assembly and export (FFmpeg)
+- 📝 脚本生成（Agnes AI 文本模型）
+- 🎨 图片生成（Agnes Image 2.1 Flash）
+- 🎬 关键帧故事板编辑
+- 🎥 视频生成（Agnes Video 2.5 Flash）
+- 🎞️ 视频组装和导出（FFmpeg）
+- ⚙️ Settings 页面配置 API 密钥
 
-## Cost
+## API
 
-- RunPod RTX 4090: $0.34/hr
-- Full project (~180 clips): ~$5 GPU
-- API costs: ~$0 (DeepSeek free tier: 5M tokens/month, Pollinations.ai: free)
+所有 API 端点位于 `/api/v1/` 前缀，完整文档见 `/docs`。
+
+| 端点 | 说明 |
+|------|------|
+| `/api/v1/projects` | 项目 CRUD |
+| `/api/v1/scenes/project/{pid}` | 场景列表/创建 |
+| `/api/v1/shots/scene/{sid}` | 镜头列表/创建 |
+| `/api/v1/characters/project/{pid}` | 角色 CRUD |
+| `/api/v1/generation/script` | 脚本生成 |
+| `/api/v1/generation/shot/{id}/image` | 图片生成 |
+| `/api/v1/generation/shot/{id}/video` | 视频生成 |
+| `/api/v1/settings` | Settings CRUD |
+| `/api/v1/export` | 项目导出 |
+
+## 成本
+
+- Agnes AI API：当前限时免费
+- RunPod RTX 4090：$0.34/小时（如需本地推理）
+
+## 获取 Agnes API Key
+
+访问 [https://agnes-ai.com](https://agnes-ai.com) 注册账号并获取 API Key。

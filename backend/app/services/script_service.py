@@ -28,55 +28,61 @@ def _extract_json(content: str) -> list[dict]:
     return []
 
 
+def _get_client():
+    from openai import OpenAI
+
+    return OpenAI(
+        api_key=settings.AGNES_API_KEY,
+        base_url=settings.AGNES_BASE_URL,
+    )
+
+
 async def generate_script(story_input: str, chapters: int = 8) -> list[dict]:
-    if not settings.DEEPSEEK_API_KEY:
+    if not settings.AGNES_API_KEY:
         return [
             {
                 "sceneIndex": i,
-                "title": f"Scene {i + 1}",
-                "description": f"This is scene {i + 1} description.",
-                "mood": "dramatic",
-                "characters": ["Character A"],
-                "action": "Action description",
-                "dialogue": "Dialogue here",
+                "title": f"场景 {i + 1}",
+                "description": f"这是场景 {i + 1} 的描述。",
+                "mood": "戏剧性",
+                "characters": ["角色A"],
+                "action": "动作描述",
+                "dialogue": "对话内容",
             }
             for i in range(chapters)
         ]
-    async with httpx.AsyncClient(timeout=120) as client:
-        response = await client.post(
-            "https://api.deepseek.com/v1/chat/completions",
-            headers={"Authorization": f"Bearer {settings.DEEPSEEK_API_KEY}"},
-            json={
-                "model": "deepseek-chat",
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": "You are a manga drama script writer. Output strict JSON array of scene objects. Each scene must have: sceneIndex, title, description, mood, characters, action, dialogue.",
-                    },
-                    {
-                        "role": "user",
-                        "content": f"Generate {chapters} scenes from this story:\n\n{story_input}\n\nOutput ONLY valid JSON array.",
-                    },
-                ],
-                "temperature": 0.8,
-                "max_tokens": 4096,
-            },
+    try:
+        client = _get_client()
+        response = client.chat.completions.create(
+            model="agnes-2.5-flash",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "你是一个漫画剧脚本生成器。输出严格的JSON数组场景对象。每个场景必须包含：sceneIndex、title、description、mood、characters、action、dialogue。只输出JSON数组，不要包含markdown代码块。",
+                },
+                {
+                    "role": "user",
+                    "content": f"从以下故事生成 {chapters} 个场景：\n\n{story_input}\n\n输出ONLY有效的JSON数组。",
+                },
+            ],
+            temperature=0.8,
+            max_tokens=4096,
         )
-        response.raise_for_status()
-        data = response.json()
-        content = data["choices"][0]["message"]["content"]
+        content = response.choices[0].message.content
         scenes = _extract_json(content)
         if scenes:
             return scenes
-        return [
-            {
-                "sceneIndex": i,
-                "title": f"Scene {i + 1}",
-                "description": content[:200],
-                "mood": "",
-                "characters": [],
-                "action": "",
-                "dialogue": "",
-            }
-            for i in range(chapters)
-        ]
+    except Exception:
+        pass
+    return [
+        {
+            "sceneIndex": i,
+            "title": f"场景 {i + 1}",
+            "description": "",
+            "mood": "",
+            "characters": [],
+            "action": "",
+            "dialogue": "",
+        }
+        for i in range(chapters)
+    ]

@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite+aiosqlite:///./manga-studio.db"
     MODELS_DIR: str = "./models"
     EXPORTS_DIR: str = "./exports"
-    DEEPSEEK_API_KEY: str = ""
-    POLLINATIONS_API_KEY: str = ""
+    AGNES_API_KEY: str = ""
+    AGNES_BASE_URL: str = "https://apihub.agnes-ai.com/v1"
     MAX_VIDEO_DURATION: int = 10
     VIDEO_RESOLUTION: str = "480p"
 

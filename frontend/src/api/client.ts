@@ -6,7 +6,7 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
   if (!data.success) throw new Error(data.error || 'Request failed');
   return data;
 }
-interface SettingsResponse { deepseek_api_key: string; pollinations_api_key: string; id: string; updated_at: string }
+interface SettingsResponse { agnes_api_key: string; id: string; updated_at: string }
 export const api = {
   getProjects: () => request<Project[]>('/projects'),
   createProject: (d: any) => request<any>('/projects', { method: 'POST', body: JSON.stringify(d) }),

@@ -4,8 +4,7 @@ from datetime import datetime
 
 
 class AppSettingsBase(BaseModel):
-    deepseek_api_key: str = ""
-    pollinations_api_key: str = ""
+    agnes_api_key: str = ""
 
 
 class AppSettingsCreate(AppSettingsBase):

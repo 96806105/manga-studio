@@ -116,6 +116,5 @@ class GeneratedVideo(Base):
 class AppSettings(Base):
     __tablename__ = "app_settings"
     id = Column(String, primary_key=True, index=True)
-    deepseek_api_key = Column(String, default="")
-    pollinations_api_key = Column(String, default="")
+    agnes_api_key = Column(String, default="")
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

@@ -26,7 +26,7 @@ const ProjectDetail: React.FC = () => {
   const handleGenerateScript = async (storyInput: string) => { setGenerating(true); setProgress(0); try { await api.generateScript(projectId, storyInput, 8); } catch (err: any) { alert(err.message); } finally { setGenerating(false); setProgress(0); } };
   const handleGenerateImage = async (shotId: string) => { setGenerating(true); setProgress(0); try { await api.generateImage(shotId); setProgress(100); } catch (err: any) { alert(err.message); } finally { setGenerating(false); setProgress(0); } };
   const handleGenerateVideo = async (shotId: string) => { setGenerating(true); setProgress(0); try { await api.generateVideo(shotId, { resolution: '480p' }); setProgress(100); } catch (err: any) { alert(err.message); } finally { setGenerating(false); setProgress(0); } };
-  const tabs: [Tab, string, any][] = [['script', 'Script', Wand2], ['storyboard', 'Storyboard', Image], ['video', 'Video', Film]];
+  const tabs: [Tab, string, any][] = [['script', '脚本', Wand2], ['storyboard', '故事板', Image], ['video', '视频', Film]];
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center gap-3 px-4 py-3 border-b border-manga-border">
@@ -47,7 +47,7 @@ const ProjectDetail: React.FC = () => {
         </div>
         <div className="flex-1 overflow-y-auto p-4">
           {selectedSceneId && activeTab === 'storyboard' && <ShotEditor />}
-          {!selectedSceneId && activeTab === 'storyboard' && <div className="flex items-center justify-center h-full text-gray-500"><p>Select a scene to edit</p></div>}
+          {!selectedSceneId && activeTab === 'storyboard' && <div className="flex items-center justify-center h-full text-gray-500"><p>选择一个场景以编辑</p></div>}
         </div>
       </div>
     </div>

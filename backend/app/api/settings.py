@@ -9,6 +9,7 @@ from app.schemas.settings import (
     AppSettingsUpdate,
 )
 import uuid
+from datetime import datetime
 
 router = APIRouter(prefix="/settings", tags=["settings"])
 
@@ -20,8 +21,7 @@ async def get_settings(db: AsyncSession = Depends(get_async_db)):
     if not settings:
         settings = AppSettings(
             id=str(uuid.uuid4()),
-            deepseek_api_key="",
-            pollinations_api_key="",
+            agnes_api_key="",
         )
         db.add(settings)
         await db.commit()
@@ -38,13 +38,11 @@ async def update_settings(
     if not settings:
         settings = AppSettings(
             id=str(uuid.uuid4()),
-            deepseek_api_key=data.deepseek_api_key,
-            pollinations_api_key=data.pollinations_api_key,
+            agnes_api_key=data.agnes_api_key,
         )
         db.add(settings)
     else:
-        settings.deepseek_api_key = data.deepseek_api_key
-        settings.pollinations_api_key = data.pollinations_api_key
+        settings.agnes_api_key = data.agnes_api_key
     await db.commit()
     await db.refresh(settings)
     return AppSettingsResponse.model_validate(settings)

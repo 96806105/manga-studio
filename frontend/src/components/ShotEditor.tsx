@@ -41,7 +41,7 @@ const ShotEditor: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-white font-semibold">Shot Editor</h3>
+        <h3 className="text-white font-semibold">镜头编辑器</h3>
         {generating && (
           <div className="flex items-center gap-2 text-studio-400 text-sm">
             <Loader2 size={16} className="animate-spin" /> {progress}%
@@ -50,7 +50,7 @@ const ShotEditor: React.FC = () => {
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <h4 className="text-gray-400 text-sm mb-2">Shots ({shots.length})</h4>
+          <h4 className="text-gray-400 text-sm mb-2">镜头 ({shots.length})</h4>
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {shots.map(shot => (
               <button key={shot.id} onClick={() => setSelectedShot(shot.id)} className={clsx('w-full text-left px-3 py-2 rounded-lg text-sm transition-colors', selectedShot === shot.id ? 'bg-studio-900/50 border border-studio-500/50' : 'bg-manga-card border border-manga-border hover:border-gray-600')}>
@@ -68,26 +68,26 @@ const ShotEditor: React.FC = () => {
           {currentShot ? (
             <div className="space-y-4">
               <div>
-                <label className="text-gray-400 text-sm mb-1 block">Description</label>
+                <label className="text-gray-400 text-sm mb-1 block">描述</label>
                 <textarea onChange={(e) => debouncedUpdate({ description: e.target.value })} className="w-full bg-manga-bg border border-manga-border rounded-lg px-3 py-2 text-white text-sm focus:border-studio-500 focus:outline-none h-24 resize-none" />
               </div>
               <div>
-                <label className="text-gray-400 text-sm mb-1 block">Camera</label>
+                <label className="text-gray-400 text-sm mb-1 block">镜头</label>
                 <select onChange={(e) => { const c = { ...currentShot.camera_config, angle: e.target.value }; debouncedUpdate({ camera_config: c }); }} className="w-full bg-manga-bg border border-manga-border rounded-lg px-3 py-2 text-white text-sm">
-                  <option value="wide">Wide</option>
-                  <option value="medium">Medium</option>
-                  <option value="closeup">Close-up</option>
+                  <option value="wide">广角</option>
+                  <option value="medium">中景</option>
+                  <option value="closeup">特写</option>
                 </select>
               </div>
               <div className="flex gap-2">
-                <button onClick={handleGenerateImage} disabled={generating} className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg text-sm"><Image size={14} /> Image</button>
-                <button onClick={handleGenerateVideo} disabled={generating} className="flex items-center gap-1.5 px-4 py-2 bg-manga-accent hover:bg-red-500 disabled:opacity-50 text-white rounded-lg text-sm"><Film size={14} /> Video</button>
+                <button onClick={handleGenerateImage} disabled={generating} className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg text-sm"><Image size={14} /> 图片</button>
+                <button onClick={handleGenerateVideo} disabled={generating} className="flex items-center gap-1.5 px-4 py-2 bg-manga-accent hover:bg-red-500 disabled:opacity-50 text-white rounded-lg text-sm"><Film size={14} /> 视频</button>
               </div>
-              {currentShot.image_url && <div><p className="text-gray-500 text-xs mb-1">Image</p><img src={currentShot.image_url} className="rounded-lg border border-manga-border" /></div>}
-              {currentShot.video_url && <div><p className="text-gray-500 text-xs mb-1">Video</p><video controls src={currentShot.video_url} className="rounded-lg border border-manga-border w-full" /></div>}
+              {currentShot.image_url && <div><p className="text-gray-500 text-xs mb-1">图片</p><img src={currentShot.image_url} className="rounded-lg border border-manga-border" /></div>}
+              {currentShot.video_url && <div><p className="text-gray-500 text-xs mb-1">视频</p><video controls src={currentShot.video_url} className="rounded-lg border border-manga-border w-full" /></div>}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-48 text-gray-500"><p>Select a shot</p></div>
+            <div className="flex items-center justify-center h-48 text-gray-500"><p>选择一个镜头</p></div>
           )}
         </div>
       </div>
