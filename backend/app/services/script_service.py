@@ -3,6 +3,31 @@ import json
 from app.core.config import settings
 
 
+def _extract_json(content: str) -> list[dict]:
+    try:
+        parsed = json.loads(content)
+        if isinstance(parsed, list):
+            return parsed
+        if isinstance(parsed, dict) and "content" in parsed:
+            inner = parsed["content"]
+            if (
+                isinstance(inner, list)
+                and len(inner) > 0
+                and isinstance(inner[0], dict)
+            ):
+                return inner
+            if isinstance(inner, str):
+                try:
+                    re_parsed = json.loads(inner)
+                    if isinstance(re_parsed, list):
+                        return re_parsed
+                except json.JSONDecodeError:
+                    pass
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return []
+
+
 async def generate_script(story_input: str, chapters: int = 8) -> list[dict]:
     if not settings.DEEPSEEK_API_KEY:
         return [
@@ -40,30 +65,18 @@ async def generate_script(story_input: str, chapters: int = 8) -> list[dict]:
         response.raise_for_status()
         data = response.json()
         content = data["choices"][0]["message"]["content"]
-        try:
-            scenes = json.loads(content)
-            return (
-                scenes
-                if isinstance(scenes, list)
-                else json.loads(
-                    scenes[0]["content"]
-                    if isinstance(scenes, list)
-                    and len(scenes) > 0
-                    and isinstance(scenes[0], dict)
-                    and "content" in scenes[0]
-                    else content
-                )
-            )
-        except json.JSONDecodeError:
-            return [
-                {
-                    "sceneIndex": i,
-                    "title": f"Scene {i + 1}",
-                    "description": content[:200],
-                    "mood": "",
-                    "characters": [],
-                    "action": "",
-                    "dialogue": "",
-                }
-                for i in range(chapters)
-            ]
+        scenes = _extract_json(content)
+        if scenes:
+            return scenes
+        return [
+            {
+                "sceneIndex": i,
+                "title": f"Scene {i + 1}",
+                "description": content[:200],
+                "mood": "",
+                "characters": [],
+                "action": "",
+                "dialogue": "",
+            }
+            for i in range(chapters)
+        ]

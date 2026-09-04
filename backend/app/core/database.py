@@ -3,8 +3,21 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from app.core.config import settings
 
-SYNC_DB_URL = "sqlite:///./manga-studio.db"
-ASYNC_DB_URL = "sqlite+aiosqlite:///./manga-studio.db"
+SYNC_DB_URL = settings.DATABASE_URL.replace("sqlite+aiosqlite", "sqlite")
+ASYNC_DB_URL = settings.DATABASE_URL
+
+engine = create_engine(
+    SYNC_DB_URL,
+    connect_args={"check_same_thread": False},
+    poolclass=pool.NullPool,
+    echo=False,
+)
+
+async_engine = create_async_engine(
+    ASYNC_DB_URL,
+    echo=False,
+    poolclass=pool.NullPool,
+)
 
 engine = create_engine(
     SYNC_DB_URL,
